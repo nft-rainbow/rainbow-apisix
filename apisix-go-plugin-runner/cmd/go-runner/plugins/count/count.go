@@ -121,9 +121,35 @@ func (c *Count) ResponseFilter(conf interface{}, w pkgHTTP.Response) {
 	DeterminCount(w, nil)
 }
 
-type GetSuccessCountHandler func(w pkgHTTP.Response) int
+type SuccessCountCalculater func(w pkgHTTP.Response) int
 
-func DeterminCount(w pkgHTTP.Response, successCountHandler GetSuccessCountHandler) {
+// func defaultSuccessCountCalculator(w pkgHTTP.Response) int {
+// 	reqId := w.Header().Get(constants.RAINBOW_REQUEST_ID_HEADER_KEY)
+// 	if reqId == "" {
+// 		return 0
+// 	}
+
+// 	reqKey := redis.RequestKey(reqId)
+// 	defer func() {
+// 		_, err := redis.DB().Del(context.Background(), reqKey).Result()
+// 		if err != nil {
+// 			log.Errorf("failed to del key %d: %s", reqKey, err)
+// 		}
+// 	}()
+
+// 	_, _, _, count, err := redis.GetRequest(reqId)
+// 	if err != nil {
+// 		log.Errorf("failed to get req %d val: %s", reqId, err)
+// 		return 0
+// 	}
+
+// 	if w.StatusCode() >= http.StatusOK && w.StatusCode() < http.StatusMultipleChoices {
+// 		return count
+// 	}
+// 	return 0
+// }
+
+func DeterminCount(w pkgHTTP.Response, successCountHandler SuccessCountCalculater) {
 	reqId := w.Header().Get(constants.RAINBOW_REQUEST_ID_HEADER_KEY)
 	if reqId == "" {
 		return
@@ -165,6 +191,8 @@ func DeterminCount(w pkgHTTP.Response, successCountHandler GetSuccessCountHandle
 	if successCount <= 0 {
 		return
 	}
+
+	log.Infof("count key %s, success count %d", countKey, successCount)
 
 	// 请求成功，改变pending count 为 count
 	_, err = redis.DB().IncrBy(context.Background(), countKey, int64(successCount)).Result()

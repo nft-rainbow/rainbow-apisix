@@ -1,7 +1,11 @@
 package resphandler
 
 import (
+	"bytes"
+	"compress/gzip"
 	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/apache/apisix-go-plugin-runner/cmd/go-runner/plugins/count"
@@ -42,12 +46,25 @@ func (p *RpcRespHandler) ParseConf(in []byte) (interface{}, error) {
 	return conf, err
 }
 
+// TODO: 由于apisix在ResponseFilter中会丢失Content-Encoding Header，目前 Content-Encoding 为 gzip 时仅通过解压缩的方式正常返回，
+// 正确的做法是用lua插件补上apisix丢失的该Header，或使用lua插件完成 ResponseFilter 的全部功能（最佳）。
 func (c *RpcRespHandler) ResponseFilter(conf interface{}, w pkgHTTP.Response) {
+
 	// NOTE: 这里置count是由于 1.apisix ext-plugin-post-resp 不支持多个 2.status ok，而rpc返回错误的不扣费
 	c.determineCount(w)
 
+	body, err := readDecompressedBody(w)
+	if err != nil {
+		log.Errorf("failed to read decompressed resp body: %v", err)
+		return
+	}
+
 	log.Infof("in rpc-resp-handler response filter, status code: %d", w.StatusCode())
 	if w.StatusCode() < http.StatusBadRequest {
+		log.Infof("apisix response header: %v\n", w.Header())
+		if _, err := w.Write(body); err != nil {
+			log.Infof("failed to write response body: %v", err)
+		}
 		return
 	}
 	// log.Infof("aaa")
@@ -58,12 +75,6 @@ func (c *RpcRespHandler) ResponseFilter(conf interface{}, w pkgHTTP.Response) {
 		return
 	}
 	// log.Infof("bbb")
-	body, err := w.ReadBody()
-	if err != nil {
-		log.Errorf("failed to read body: %v", err)
-		return
-	}
-	// log.Infof("ccc")
 
 	rpcResps := lo.Map(rpcIdsInfo.Items, func(item *redis.RpcInfoItem, index int) rpc.JsonRpcMessage {
 		return rpc.JsonRpcMessage{
@@ -78,12 +89,12 @@ func (c *RpcRespHandler) ResponseFilter(conf interface{}, w pkgHTTP.Response) {
 
 	w.WriteHeader(http.StatusOK)
 	if rpcIdsInfo.IsBatchRpc {
-		body, _ = json.Marshal(rpcResps)
-		w.Write(body)
+		newResp, _ := json.Marshal(rpcResps)
+		w.Write(newResp)
 		return
 	} else {
-		body, _ = json.Marshal(rpcResps[0])
-		w.Write(body)
+		newResp, _ := json.Marshal(rpcResps[0])
+		w.Write(newResp)
 	}
 	// log.Infof("ddd")
 }
@@ -94,9 +105,9 @@ func (c *RpcRespHandler) determineCount(w pkgHTTP.Response) {
 			return 0
 		}
 
-		body, err := w.ReadBody()
+		body, err := readDecompressedBody(w)
 		if err != nil {
-			log.Errorf("failed to read body: %v", err)
+			log.Errorf("failed to read decompressed body: %v", err)
 			return 0
 		}
 
@@ -111,7 +122,7 @@ func (c *RpcRespHandler) determineCount(w pkgHTTP.Response) {
 
 		var resp rpc.JsonRpcMessage
 		if err = json.Unmarshal(body, &resp); err != nil {
-			log.Infof("failed unmarshal rpc response")
+			log.Infof("failed unmarshal rpc response: %v", err)
 			return 0
 		}
 		if resp.Error != nil {
@@ -119,4 +130,26 @@ func (c *RpcRespHandler) determineCount(w pkgHTTP.Response) {
 		}
 		return 1
 	})
+}
+
+func readDecompressedBody(w pkgHTTP.Response) ([]byte, error) {
+	rawBody, err := w.ReadBody()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read body: %v", err)
+	}
+	// var body []byte
+	var reader io.Reader = bytes.NewReader(rawBody)
+	encoding := w.Header().Get("Content-Encoding")
+	if encoding == "gzip" {
+		reader, err = gzip.NewReader(reader)
+		if err != nil {
+			return nil, fmt.Errorf("failed to new gzip reader: %v", err)
+		}
+	}
+	// log.Infof("ccc")
+	body, err := io.ReadAll(reader)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read body: %v", err)
+	}
+	return body, nil
 }

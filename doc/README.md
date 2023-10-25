@@ -2,7 +2,7 @@
 
 ## 架构图
 
-![image](/fiat-gateway.png)
+![image](./fiat-gateway.png)
 ## 安装
 - 安装Redis
   - 关闭保护模式以接收来自docker实例的连接

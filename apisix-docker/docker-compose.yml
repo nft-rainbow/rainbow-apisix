@@ -35,6 +35,7 @@ services:
       - ./apisix_conf/config.yaml:/usr/local/apisix/conf/config.yaml:ro
       - ./myplugins/hello.lua:/usr/local/apisix/apisix/plugins/hello.lua
       - ./myplugins/confura-resp-rewrite.lua:/usr/local/apisix/apisix/plugins/confura-resp-rewrite.lua
+      - ./myplugins/scan-resp-rewrite.lua:/usr/local/apisix/apisix/plugins/scan-resp-rewrite.lua
       - ./apisix_conf/apisix-go-plugin-runner/go-runner:/usr/local/apisix-go-plugin-runner/go-runner
       - ./apisix_conf/apisix-go-plugin-runner/config.yaml:/usr/local/apisix-go-plugin-runner/config.yaml
     depends_on:

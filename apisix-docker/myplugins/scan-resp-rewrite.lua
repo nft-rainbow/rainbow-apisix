@@ -24,36 +24,21 @@ local schema = {
   required = {},
 }
 
-local plugin_name = "confura-resp-rewrite"
+local plugin_name = "scan-resp-rewrite"
 
 -- 用于保存请求体的全局变量
-local request_body
 local raw_response_body
 local raw_status
 
 local _M = {
   version = 0.1,
-  priority = 1008,
+  priority = 0,
   name = plugin_name,
   schema = schema,
 }
 
-
 function _M.check_schema(conf)
-  return true
-  -- return core.schema.check(schema, conf)
-end
-
--- ISSUE: 该阶段在配置了插件ext-plugin-pre-req后则不执行，原因未知
-function _M.access(conf, ctx)
-  core.log.warn("Run access")
-  request_body = core.request.get_body(1024 * 1000, ctx)
-end
-
--- NOTICE: 该阶段在配置了插件ext-plugin-pre-req且设置它的优先级为-10000则会执行
-function _M.rewrite(conf, ctx)
-  request_body = core.request.get_body(1024 * 1000, ctx)
-  core.log.warn("Run rewrite")
+  return core.schema.check(schema, conf)
 end
 
 function _M.header_filter(conf, ctx)
@@ -70,6 +55,7 @@ end
 -- 在body_filter阶段处理响应体
 function _M.body_filter(conf, ctx)
   core.log.warn("Response status: ", ctx.var.status, ", Raw status: ", raw_status)
+
   if raw_status < 400 then
     return
   end
@@ -79,50 +65,14 @@ function _M.body_filter(conf, ctx)
     return
   end
 
-  core.log.warn("Request body: <" .. request_body .. ">", " raw_response_body: ", raw_response_body)
-  local decoded = core.json.decode(request_body)
+  core.log.warn("raw_response_body: ", raw_response_body)
 
-  if core.table.isarray(decoded) then
-    core.log.warn("is array")
-    local body = {}
-    for key, value in pairs(decoded) do
-      body[key] = {
-        ["jsonrpc"] = value.jsonrpc,
-        ["id"] = value.id,
-        ["error"] = {
-          ["code"] = -32601,
-          ["message"] = raw_response_body,
-        }
-      }
-    end
-    ngx.arg[1] = core.json.encode(body)
-  else
-    core.log.warn("is single")
-    local body = {
-      ["jsonrpc"] = decoded.jsonrpc,
-      ["id"] = decoded.id,
-      ["error"] = {
-        ["code"] = -32601,
-        ["message"] = raw_response_body,
-      }
-    }
-    core.log.warn("rewrited body", core.json.encode(body))
-    ngx.arg[1] = core.json.encode(body)
-
-    -- ngx.arg[1] = "hello world"
-  end
-
-
-
-
-  -- ngx.log(ngx.ERR, "Request body by ctx", core.request.get_body(1024 * 1000, ctx))
-  -- core.log.warn(core.json.encode(ctx, true))
-
-  -- 获取保存的请求体并打印到Nginx的错误日志中
-  -- ngx.log(ngx.ERR, "Request Body: ", request_body)
-
-  -- 返回响应体
-  -- ngx.arg[1] = request_body
+  local body = {
+    ["code"] = raw_status,
+    ["data"] = raw_response_body,
+  }
+  core.log.warn("rewrited body", core.json.encode(body))
+  ngx.arg[1] = core.json.encode(body)
 end
 
 return _M

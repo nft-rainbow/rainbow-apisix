@@ -464,12 +464,17 @@ curl $apisix_admin_addr/apisix/admin/routes/2000 -H 'X-API-KEY: edd1c9f034335f13
   "host": "'${domain_server_cmain_rpc}'",
   "plugins": {
     "ext-plugin-pre-req": {
+       "_meta": {
+         "priority": -10000
+       },
        "conf": [
          {"name":"apikey-auth", "value":"{\"lookup\":\"path\"}"},
          {"name":"confura-parser", "value":"{\"is_mainnet\":true,\"is_cspace\":true}"},
          {"name":"count", "value":"{}"},
          {"name":"rate-limit", "value":"{\"mode\":\"cost_type\"}"}
        ]
+    },
+    "confura-resp-rewrite": {
     },
     "proxy-rewrite": {
       "headers": {
@@ -480,13 +485,6 @@ curl $apisix_admin_addr/apisix/admin/routes/2000 -H 'X-API-KEY: edd1c9f034335f13
        "conf": [
          {"name":"rpc-resp-handler","value":"{}"}
        ]
-    },
-    "response-rewrite": {
-      "headers": {
-          "set": {
-              "Content-Type": "application/json"
-          }
-      }
     },
     "http-logger": {
       "_meta": {
@@ -510,12 +508,17 @@ curl $apisix_admin_addr/apisix/admin/routes/2100 -H 'X-API-KEY: edd1c9f034335f13
   "host": "'${domain_server_ctest_rpc}'",
   "plugins": {
     "ext-plugin-pre-req": {
+       "_meta": {
+         "priority": -10000
+       },
        "conf": [
          {"name":"apikey-auth", "value":"{\"lookup\":\"path\"}"},
          {"name":"confura-parser", "value":"{\"is_mainnet\":false,\"is_cspace\":true}"},
          {"name":"count", "value":"{}"},
          {"name":"rate-limit", "value":"{\"mode\":\"cost_type\"}"}
        ]
+    },
+    "confura-resp-rewrite": {
     },
     "proxy-rewrite": {
       "headers": {
@@ -526,13 +529,6 @@ curl $apisix_admin_addr/apisix/admin/routes/2100 -H 'X-API-KEY: edd1c9f034335f13
        "conf": [
          {"name":"rpc-resp-handler","value":"{}"}
        ]
-    },
-    "response-rewrite": {
-      "headers": {
-          "set": {
-              "Content-Type": "application/json"
-          }
-      }
     },
     "http-logger": {
       "_meta": {
@@ -556,12 +552,17 @@ curl $apisix_admin_addr/apisix/admin/routes/2200 -H 'X-API-KEY: edd1c9f034335f13
   "host": "'${domain_server_emain_rpc}'",
   "plugins": {
     "ext-plugin-pre-req": {
+       "_meta": {
+         "priority": -10000
+       },
        "conf": [
          {"name":"apikey-auth", "value":"{\"lookup\":\"path\"}"},
          {"name":"confura-parser", "value":"{\"is_mainnet\":true,\"is_cspace\":false}"},
          {"name":"count", "value":"{}"},
          {"name":"rate-limit", "value":"{\"mode\":\"cost_type\"}"}
        ]
+    },
+    "confura-resp-rewrite": {
     },
     "proxy-rewrite": {
       "headers": {
@@ -572,13 +573,6 @@ curl $apisix_admin_addr/apisix/admin/routes/2200 -H 'X-API-KEY: edd1c9f034335f13
        "conf": [
          {"name":"rpc-resp-handler","value":"{}"}
        ]
-    },
-    "response-rewrite": {
-      "headers": {
-          "set": {
-              "Content-Type": "application/json"
-          }
-      }
     },
     "http-logger": {
       "_meta": {
@@ -602,12 +596,17 @@ curl $apisix_admin_addr/apisix/admin/routes/2300 -H 'X-API-KEY: edd1c9f034335f13
   "host": "'${domain_server_etest_rpc}'",
   "plugins": {
     "ext-plugin-pre-req": {
+       "_meta": {
+         "priority": -10000
+       },
        "conf": [
          {"name":"apikey-auth", "value":"{\"lookup\":\"path\"}"},
          {"name":"confura-parser", "value":"{\"is_mainnet\":false,\"is_cspace\":false}"},
          {"name":"count", "value":"{}"},
          {"name":"rate-limit", "value":"{\"mode\":\"cost_type\"}"}
        ]
+    },
+    "confura-resp-rewrite": {
     },
     "proxy-rewrite": {
       "headers": {
@@ -618,13 +617,6 @@ curl $apisix_admin_addr/apisix/admin/routes/2300 -H 'X-API-KEY: edd1c9f034335f13
        "conf": [
          {"name":"rpc-resp-handler","value":"{}"}
        ]
-    },
-    "response-rewrite": {
-      "headers": {
-          "set": {
-              "Content-Type": "application/json"
-          }
-      }
     },
     "http-logger": {
       "_meta": {
@@ -649,12 +641,17 @@ curl $apisix_admin_addr/apisix/admin/routes/3000 -H 'X-API-KEY: edd1c9f034335f13
   "host": "'${domain_server_cmain_scan}'",
   "plugins": {
     "ext-plugin-pre-req": {
+       "_meta": {
+         "priority": -10000
+       },
        "conf": [
          {"name":"apikey-auth", "value":"{\"lookup\":\"header\"}"},
          {"name":"scan-parser", "value":"{\"is_mainnet\":true,\"is_cspace\":true}"},
          {"name":"count", "value":"{}"},
          {"name":"rate-limit", "value":"{\"mode\":\"cost_type\"}"}
        ]
+    },
+    "scan-resp-rewrite": {
     },
     "proxy-rewrite": {
       "headers": {
@@ -668,13 +665,6 @@ curl $apisix_admin_addr/apisix/admin/routes/3000 -H 'X-API-KEY: edd1c9f034335f13
          {"name":"scan-resp-handler","value":"{}"}
        ]
     },
-    "response-rewrite": {
-      "headers": {
-          "set": {
-              "Content-Type": "application/json"
-          }
-      }
-    },
     "http-logger": {
       "_meta": {
         "disable": false
@@ -682,11 +672,6 @@ curl $apisix_admin_addr/apisix/admin/routes/3000 -H 'X-API-KEY: edd1c9f034335f13
       "include_req_body": true,
       "include_resp_body": true,
       "uri": "http://'${upstream_logs_service}'/logs/scan_cspace"
-    },
-    "body-transformer": {
-      "response": {
-        "template": "'"$response_template_scan"'"
-      }
     }
   },
   "upstream_id": "100",
@@ -702,12 +687,17 @@ curl $apisix_admin_addr/apisix/admin/routes/3100 -H 'X-API-KEY: edd1c9f034335f13
   "host": "'${domain_server_ctest_scan}'",
   "plugins": {
     "ext-plugin-pre-req": {
+       "_meta": {
+         "priority": -10000
+       },
        "conf": [
          {"name":"apikey-auth", "value":"{\"lookup\":\"header\"}"},
          {"name":"scan-parser", "value":"{\"is_mainnet\":false,\"is_cspace\":true}"},
          {"name":"count", "value":"{}"},
          {"name":"rate-limit", "value":"{\"mode\":\"cost_type\"}"}
        ]
+    },
+    "scan-resp-rewrite": {
     },
     "proxy-rewrite": {
       "headers": {
@@ -721,13 +711,6 @@ curl $apisix_admin_addr/apisix/admin/routes/3100 -H 'X-API-KEY: edd1c9f034335f13
          {"name":"scan-resp-handler","value":"{}"}
        ]
     },
-    "response-rewrite": {
-      "headers": {
-          "set": {
-              "Content-Type": "application/json"
-          }
-      }
-    },
     "http-logger": {
       "_meta": {
         "disable": false
@@ -735,11 +718,6 @@ curl $apisix_admin_addr/apisix/admin/routes/3100 -H 'X-API-KEY: edd1c9f034335f13
       "include_req_body": true,
       "include_resp_body": true,
       "uri": "http://'${upstream_logs_service}'/logs/scan_cspace"
-    },
-    "body-transformer": {
-      "response": {
-        "template": "'"$response_template_scan"'"
-      }
     }
   },
   "upstream_id": "100",
@@ -755,12 +733,17 @@ curl $apisix_admin_addr/apisix/admin/routes/3200 -H 'X-API-KEY: edd1c9f034335f13
   "host": "'${domain_server_emain_scan}'",
   "plugins": {
     "ext-plugin-pre-req": {
+       "_meta": {
+         "priority": -10000
+       },
        "conf": [
          {"name":"apikey-auth", "value":"{\"lookup\":\"header\"}"},
          {"name":"scan-parser", "value":"{\"is_mainnet\":true,\"is_cspace\":false}"},
          {"name":"count", "value":"{}"},
          {"name":"rate-limit", "value":"{\"mode\":\"cost_type\"}"}
        ]
+    },
+    "scan-resp-rewrite": {
     },
     "proxy-rewrite": {
       "headers": {
@@ -774,13 +757,6 @@ curl $apisix_admin_addr/apisix/admin/routes/3200 -H 'X-API-KEY: edd1c9f034335f13
          {"name":"scan-resp-handler","value":"{}"}
        ]
     },
-    "response-rewrite": {
-      "headers": {
-          "set": {
-              "Content-Type": "application/json"
-          }
-      }
-    },
     "http-logger": {
       "_meta": {
         "disable": false
@@ -788,11 +764,6 @@ curl $apisix_admin_addr/apisix/admin/routes/3200 -H 'X-API-KEY: edd1c9f034335f13
       "include_req_body": true,
       "include_resp_body": true,
       "uri": "http://'${upstream_logs_service}'/logs/scan_espace"
-    },
-    "body-transformer": {
-      "response": {
-        "template": "'"$response_template_scan"'"
-      }
     }
   },
   "upstream_id": "100",
@@ -808,12 +779,17 @@ curl $apisix_admin_addr/apisix/admin/routes/3300 -H 'X-API-KEY: edd1c9f034335f13
   "host": "'${domain_server_etest_scan}'",
   "plugins": {
     "ext-plugin-pre-req": {
+       "_meta": {
+         "priority": -10000
+       },
        "conf": [
          {"name":"apikey-auth", "value":"{\"lookup\":\"header\"}"},
          {"name":"scan-parser", "value":"{\"is_mainnet\":false,\"is_cspace\":false}"},
          {"name":"count", "value":"{}"},
          {"name":"rate-limit", "value":"{\"mode\":\"cost_type\"}"}
        ]
+    },
+    "scan-resp-rewrite": {
     },
     "proxy-rewrite": {
       "headers": {
@@ -827,13 +803,6 @@ curl $apisix_admin_addr/apisix/admin/routes/3300 -H 'X-API-KEY: edd1c9f034335f13
          {"name":"scan-resp-handler","value":"{}"}
        ]
     },
-    "response-rewrite": {
-      "headers": {
-          "set": {
-              "Content-Type": "application/json"
-          }
-      }
-    },
     "http-logger": {
       "_meta": {
         "disable": false
@@ -841,11 +810,6 @@ curl $apisix_admin_addr/apisix/admin/routes/3300 -H 'X-API-KEY: edd1c9f034335f13
       "include_req_body": true,
       "include_resp_body": true,
       "uri": "http://'${upstream_logs_service}'/logs/scan_espace"
-    },
-    "body-transformer": {
-      "response": {
-        "template": "'"$response_template_scan"'"
-      }
     }
   },
   "upstream_id": "100",

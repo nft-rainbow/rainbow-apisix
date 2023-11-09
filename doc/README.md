@@ -185,3 +185,17 @@ server {
 ## 注意事项
 1. 当 `apisix-docker/apisix_conf/config.yaml` 配置文件有问题时，会导致 apisix docker 启动失败。
    * 如 "request etcd endpoint 'http://127.0.0.1:2379/version' error, connection refused"
+2. 路由中配置插件 `confura-resp-rewrite` 时需要配置 `ext-plugin-pre-req`的优先级要低于`confura-resp-rewrite`，这样`confura-resp-rewrite`插件的 _M.rewrite 才会执行。
+    ```json
+    "plugins": {
+        "ext-plugin-pre-req": {
+            "_meta": {
+            "priority": -10000
+            },
+        ...
+        },
+        ...
+        "confura-resp-rewrite": {
+        }
+    },
+    ```

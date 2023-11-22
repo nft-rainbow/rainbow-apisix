@@ -6,6 +6,5 @@ build-plugin:
 
 deploy:
 	make build-plugin && \
-	
 	cd apisix-docker && \
 	docker compose up --force-recreate &

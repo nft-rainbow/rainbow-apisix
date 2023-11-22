@@ -56,7 +56,7 @@ gzip 配置需要包含如下配置
 ```
 
 ### Nginx2
-代理的api包含 rainbow-dashboard/rainbow-admin（现在的配置也支持rainbow-api）
+Nginx2代理的api包含 rainbow-dashboard/rainbow-admin（现在的配置也支持rainbow-api）
 
 #### rainbow-dashboard 配置
 
@@ -185,7 +185,7 @@ server {
 ## 注意事项
 1. 当 `apisix-docker/apisix_conf/config.yaml` 配置文件有问题时，会导致 apisix docker 启动失败。
    * 如 "request etcd endpoint 'http://127.0.0.1:2379/version' error, connection refused"
-2. 路由中配置插件 `confura-resp-rewrite` 时需要配置 `ext-plugin-pre-req`的优先级要低于`confura-resp-rewrite`，这样`confura-resp-rewrite`插件的 _M.rewrite 才会执行。
+2. Apisix Router中配置插件 `confura-resp-rewrite` 时需要配置其优先级高于 `ext-plugin-pre-req`，这样`confura-resp-rewrite`插件的 `_M.rewrite` 才会优先执行，否则在`ext-plugin-pre-req`失败后将不执行`confura-resp-rewrite`的`_M.rewrite`。
     ```json
     "plugins": {
         "ext-plugin-pre-req": {

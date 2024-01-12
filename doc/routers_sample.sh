@@ -127,7 +127,8 @@ echo "开始配置apisix路由"
 #######################################################################################################
 
 # *** response rewrite 模版
-response_template_scan=$(cat <<EOF | awk '{gsub(/"/,"\\\"");};1' | awk '{$1=$1};1' | tr -d '\r\n'                                                                                                                  dayong@dayongdeMBP
+response_template_scan=$(
+  cat <<EOF | awk '{gsub(/"/,"\\\"");};1' | awk '{$1=$1};1' | tr -d '\r\n' dayong@dayongdeMBP
 {% if (_ctx.var.status ~= 200) then %} {"code":{{_ctx.var.status}},"data":{*_body*}} {% else %} {*_body*} {% end %}
 EOF
 )
@@ -179,12 +180,10 @@ curl $apisix_admin_addr/apisix/admin/global_rules/1 -X PUT \
             }
         }
      }'
-        
-        # "hello":{
-        #   "body": "hello world"
-        # },
 
-
+# "hello":{
+#   "body": "hello world"
+# },
 
 # exit
 
@@ -239,6 +238,21 @@ curl $apisix_admin_addr/apisix/admin/routes/1000 -H 'X-API-KEY: edd1c9f034335f13
   "priority": 400
 }'
 
+curl $apisix_admin_addr/apisix/admin/routes/1001 -H 'X-API-KEY: edd1c9f034335f136f87ad84b625c8f1' -X PUT -d '
+{
+  "name": "rainbow-openapi",
+  "desc": "rainbow open api 路由，只匹配openapi需要收费的api",
+  "uri": "/*",
+  "vars": [
+    ["uri", "~~", "^/v1/files/.*$"]
+  ],
+  "host": "'${domain_server_rainbow_openapi}'",
+  "plugins": {
+  },
+  "upstream_id": "100",
+  "priority": 500
+}'
+
 # exit 0
 
 # TODO: rainbow api dashboard 收费相关接口
@@ -291,13 +305,13 @@ curl $apisix_admin_addr/apisix/admin/routes/1100 -H 'X-API-KEY: edd1c9f034335f13
 }'
 
 # rainbow api dashboard 不需要身份验证的接口
-	# dashboardRouter.POST("/register", userRegisterEndpoint)
-	# dashboardRouter.POST("/login", middlewares.UserLoginHandler)
-	# dashboardRouter.POST("/logout", middlewares.JwtAuthMiddleware.LogoutHandler)
-	# dashboardRouter.GET("/refresh_token", middlewares.UserRefreshTokenHandler)
-	# dashboardRouter.POST("/password/session", createPasswordResetSessionEndpoint)
-	# dashboardRouter.GET("/password/session/:code", getPasswordResetSessionEndpoint)
-	# dashboardRouter.POST("/password/session/:code", newPasswordEndpoint)
+# dashboardRouter.POST("/register", userRegisterEndpoint)
+# dashboardRouter.POST("/login", middlewares.UserLoginHandler)
+# dashboardRouter.POST("/logout", middlewares.JwtAuthMiddleware.LogoutHandler)
+# dashboardRouter.GET("/refresh_token", middlewares.UserRefreshTokenHandler)
+# dashboardRouter.POST("/password/session", createPasswordResetSessionEndpoint)
+# dashboardRouter.GET("/password/session/:code", getPasswordResetSessionEndpoint)
+# dashboardRouter.POST("/password/session/:code", newPasswordEndpoint)
 curl $apisix_admin_addr/apisix/admin/routes/1115 -H 'X-API-KEY: edd1c9f034335f136f87ad84b625c8f1' -X PUT -d '
 {
   "name": "rainbow-dashboard-api-no-jwt",
@@ -481,6 +495,14 @@ curl $apisix_admin_addr/apisix/admin/routes/2000 -H 'X-API-KEY: edd1c9f034335f13
         "X-Rainbow-Target-Url": "https://main.confluxrpc.com/'${apikey_confura_main}'"
       }
     },
+    "response-rewrite": {
+      "headers": {
+          "remove": ["Access-Control-Allow-Origin"]
+      },
+      "vars":[
+          [ "status","==",200 ]
+      ]
+    },
     "ext-plugin-post-resp": {
        "conf": [
          {"name":"rpc-resp-handler","value":"{}"}
@@ -524,6 +546,14 @@ curl $apisix_admin_addr/apisix/admin/routes/2100 -H 'X-API-KEY: edd1c9f034335f13
       "headers": {
         "X-Rainbow-Target-Url": "https://test.confluxrpc.com/'${apikey_confura_test}'"
       }
+    },
+    "response-rewrite": {
+      "headers": {
+          "remove": ["Access-Control-Allow-Origin"]
+      },
+      "vars":[
+          [ "status","==",200 ]
+      ]
     },
     "ext-plugin-post-resp": {
        "conf": [
@@ -569,6 +599,14 @@ curl $apisix_admin_addr/apisix/admin/routes/2200 -H 'X-API-KEY: edd1c9f034335f13
         "X-Rainbow-Target-Url": "https://evm.confluxrpc.com/'${apikey_confura_main}'"
       }
     },
+    "response-rewrite": {
+      "headers": {
+          "remove": ["Access-Control-Allow-Origin"]
+      },
+      "vars":[
+          [ "status","==",200 ]
+      ]
+    },
     "ext-plugin-post-resp": {
        "conf": [
          {"name":"rpc-resp-handler","value":"{}"}
@@ -612,6 +650,14 @@ curl $apisix_admin_addr/apisix/admin/routes/2300 -H 'X-API-KEY: edd1c9f034335f13
       "headers": {
         "X-Rainbow-Target-Url": "https://evmtestnet.confluxrpc.com/'${apikey_confura_test}'"
       }
+    },
+    "response-rewrite": {
+      "headers": {
+          "remove": ["Access-Control-Allow-Origin"]
+      },
+      "vars":[
+          [ "status","==",200 ]
+      ]
     },
     "ext-plugin-post-resp": {
        "conf": [
@@ -817,5 +863,3 @@ curl $apisix_admin_addr/apisix/admin/routes/3300 -H 'X-API-KEY: edd1c9f034335f13
 }'
 
 echo "配置apisix路由完成"
-
-

@@ -61,7 +61,7 @@ function _M.header_filter(conf, ctx)
   raw_status = ngx.status
   ngx.header.content_type = "application/json"
 
-  if ngx.status >= 400 and ngx.status < 500 then
+  if ngx.status >= 400 then -- and ngx.status < 500 then
     ngx.status = 200                --修改状态码
     ngx.header.content_length = nil --置空，因为下面会修改 resp content
   end
@@ -90,8 +90,9 @@ function _M.body_filter(conf, ctx)
         ["jsonrpc"] = value.jsonrpc,
         ["id"] = value.id,
         ["error"] = {
-          ["code"] = -32601,
+          ["code"] = -32002,
           ["message"] = raw_response_body,
+          ["data"] = "upstream status: " .. raw_status,
         }
       }
     end
@@ -102,8 +103,9 @@ function _M.body_filter(conf, ctx)
       ["jsonrpc"] = decoded.jsonrpc,
       ["id"] = decoded.id,
       ["error"] = {
-        ["code"] = -32601,
+        ["code"] = -32002,
         ["message"] = raw_response_body,
+        ["data"] = "upstream status: " .. raw_status,
       }
     }
     core.log.warn("rewrited body", core.json.encode(body))

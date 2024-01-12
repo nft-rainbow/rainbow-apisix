@@ -83,6 +83,7 @@ func (c *RpcRespHandler) ResponseFilter(conf interface{}, w pkgHTTP.Response) {
 			Error: &rpc.JsonError{
 				Code:    -32001,
 				Message: string(body),
+				Data:    fmt.Sprintf("upstrem status: %d", http.StatusBadRequest),
 			},
 		}
 	})

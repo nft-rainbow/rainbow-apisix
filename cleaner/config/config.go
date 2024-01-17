@@ -18,7 +18,7 @@ var (
 )
 
 func init() {
-	InitByFile("../config.yaml")
+	InitByFile("./config.yaml")
 }
 
 func InitByFile(file string) {

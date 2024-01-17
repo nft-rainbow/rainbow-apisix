@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/nft-rainbow/conflux-gin-helper/logger"
@@ -38,11 +37,9 @@ func main() {
 		})
 	}
 
-	fmt.Println("cleaners len: ", len(cleaners))
+	logrus.WithField("cleaners len: ", len(cleaners)).Info("gen cleaners")
 
 	for _, c := range cleaners {
-		fmt.Println("CCC")
-
 		logrus.WithField("cleaner", c.Name()).Info("start clean")
 		err := c.Clean()
 		logrus.WithField("cleaner", c.Name()).WithField("expire date", expireDate).WithError(err).Info("cleaned completed")

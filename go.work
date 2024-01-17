@@ -1,3 +1,6 @@
 go 1.20
 
-use ./apisix-go-plugin-runner
+use (
+	./apisix-go-plugin-runner
+	./cleaner
+)

@@ -29,6 +29,7 @@ func (m *MongodbCleaner) GetDbClient() *mongo.Client {
 	}
 
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(m.Uri))
+	logrus.WithError(err).Info("connect to MongoDB")
 	if err != nil {
 		panic(err)
 	}

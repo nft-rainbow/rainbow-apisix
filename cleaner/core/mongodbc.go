@@ -2,7 +2,6 @@ package core
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -75,7 +74,6 @@ func (m *MongodbCleaner) Clean() error {
 			var log HttpLog
 			err := result.Decode(&log)
 			if err == mongo.ErrNoDocuments {
-				fmt.Println("Document not found")
 				break
 			} else if err != nil {
 				logrus.WithField("table", coll).WithError(err).Info("failed to query table")

@@ -58,6 +58,7 @@ func (m *MongodbCleaner) Clean() error {
 			continue
 		}
 
+		logrus.WithField("table", coll).WithError(err).Info("start clean table")
 		result, err := db.Collection(coll).DeleteMany(context.Background(), filter)
 		logrus.WithField("table", coll).WithField("count", result).WithError(err).Info("clean table done")
 		if err != nil {

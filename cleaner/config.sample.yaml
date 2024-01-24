@@ -1,4 +1,4 @@
-dataRetentionDays: 90
+dataRetentionDays: 30
 # mongoDbUri: mongodb://172.16.0.113:27017/?maxPoolSize=20 
 mongodb:
   enabled: true

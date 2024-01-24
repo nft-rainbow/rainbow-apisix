@@ -65,13 +65,18 @@ func (m *MongodbCleaner) Clean() error {
 		return err
 	}
 
-	date := m.ExpireDate.Format(time.DateOnly)
+	// date := m.ExpireDate.Format(time.DateOnly)
+	// filter := bson.M{
+	// 	"$or": []bson.M{
+	// 		{"req_date_str": bson.M{"$lt": date}},      // req_date_str 小于 date
+	// 		{"req_date_str": bson.M{"$exists": false}}, // 不包含 req_date_str
+	// 	},
+	// }
+
 	filter := bson.M{
-		"$or": []bson.M{
-			{"req_date_str": bson.M{"$lt": date}},      // req_date_str 小于 date
-			{"req_date_str": bson.M{"$exists": false}}, // 不包含 req_date_str
-		},
+		"_id": bson.M{"$lt": primitive.NewObjectIDFromTimestamp(m.ExpireDate)},
 	}
+
 	for _, coll := range colls {
 		if !strings.HasPrefix(coll, "http_logs_") {
 			continue
@@ -92,7 +97,7 @@ func (m *MongodbCleaner) Clean() error {
 			}
 
 			// logrus.WithField("last log id", log.ID).Info("find one")
-			// continue
+			// break
 
 			_filter := bson.M{
 				"_id": bson.M{"$lte": log.ID},

@@ -100,7 +100,7 @@ func (m *MongodbCleaner) Clean() error {
 			// break
 
 			_filter := bson.M{
-				"_id": bson.M{"$lte": log.ID},
+				"_id": bson.M{"$lt": log.ID},
 			}
 
 			deleteResult, err := db.Collection(coll).DeleteMany(context.Background(), _filter)

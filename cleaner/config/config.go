@@ -7,8 +7,9 @@ import (
 type Config struct {
 	DataRetentionDays int `yaml:"dataRetentionDays"`
 	MongoDb           struct {
-		Enabled bool   `yaml:"enabled"`
-		Uri     string `yaml:"uri"`
+		Enabled        bool   `yaml:"enabled"`
+		Uri            string `yaml:"uri"`
+		DeleteOneBatch int64  `yaml:"deleteOneBatch"`
 	} `yaml:"mongoDb"`
 	LogCleanPaths []string `yaml:"logCleanPaths"`
 }

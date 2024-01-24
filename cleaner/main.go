@@ -25,8 +25,9 @@ func main() {
 
 	if config.Get().MongoDb.Enabled {
 		cleaners = append(cleaners, &core.MongodbCleaner{
-			Uri:        config.Get().MongoDb.Uri,
-			ExpireDate: expireDate,
+			Uri:            config.Get().MongoDb.Uri,
+			ExpireDate:     expireDate,
+			DeleteOneBatch: config.Get().MongoDb.DeleteOneBatch,
 		})
 	}
 

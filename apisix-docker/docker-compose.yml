@@ -50,6 +50,11 @@ services:
       # - "443:9443/tcp"
     networks:
       apisix:
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500m"
+        max-file: "10"
 
   etcd:
     image: bitnami/etcd:3.4.15
@@ -75,6 +80,11 @@ services:
       - "9090:9090"
     networks:
       apisix:
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500m"
+        max-file: "3"
 
   grafana:
     image: grafana/grafana:7.3.7

@@ -180,6 +180,31 @@ server {
 }
 ```
 
+## IP相关配置
+
+1. routers.sh 
+
+upstream_proxy、upstream_logs_service、apisix_admin_addr，用 apisix服务器 内网IP 或 docker 网关。由于 docker 网关在重启后可能会变，最好使用内网IP
+
+upstream_rainbow_app_service、rainbow_api_addr、settle_addr，用 rainbow-api服务器内网IP
+
+```
+## upstreams
+upstream_proxy="172.18.0.1:8020" 
+upstream_logs_service="172.18.0.1:19080"
+upstream_rainbow_app_service="172.16.0.110:8090" 
+
+## addrs
+apisix_admin_addr=http://127.0.0.1:9180
+rainbow_api_addr=http://172.16.0.110:8080 
+settle_addr=http://172.16.0.110:8031
+```
+
+2. apisix-docker/apisix_conf/apisix-go-plugin-runner/config.yaml
+
+redis.host 用 apisix服务器 内网IP
+
+
 
 
 ## 注意事项

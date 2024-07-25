@@ -238,21 +238,6 @@ curl $apisix_admin_addr/apisix/admin/routes/1000 -H 'X-API-KEY: edd1c9f034335f13
   "priority": 400
 }'
 
-curl $apisix_admin_addr/apisix/admin/routes/1001 -H 'X-API-KEY: edd1c9f034335f136f87ad84b625c8f1' -X PUT -d '
-{
-  "name": "rainbow-openapi",
-  "desc": "rainbow open api 路由，只匹配openapi需要收费的api",
-  "uri": "/*",
-  "vars": [
-    ["uri", "~~", "^/v1/files/.*$"]
-  ],
-  "host": "'${domain_server_rainbow_openapi}'",
-  "plugins": {
-  },
-  "upstream_id": "100",
-  "priority": 500
-}'
-
 # exit 0
 
 # TODO: rainbow api dashboard 收费相关接口

@@ -9,7 +9,7 @@ var (
 func InitQuotaLimit() {
 	quotaLimit = make(map[enums.CostType]int)
 	quotaLimit[enums.COST_TYPE_RAINBOW_NORMAL] = 10000
-	quotaLimit[enums.COST_TYPE_RAINBOW_MINT] = 200
+	quotaLimit[enums.COST_TYPE_RAINBOW_MINT] = 1000
 	quotaLimit[enums.COST_TYPE_RAINBOW_DEPLOY] = 200
 }
 

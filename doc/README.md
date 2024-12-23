@@ -10,9 +10,9 @@
 - 安装Docker
 
 ## Apisix部署及配置
-1. 创建 apisix config 文件, 路径 `apisix-docker/apisix_conf/config.yaml`，可参考config-sample.yaml
+1. 创建 apisix config 文件, 路径 `apisix-docker/apisix_conf/config.yaml`，可参考`cmd/go-runner/plugins/config-sample.yaml`
 2. 执行命令 `make deploy` 部署 ，该命令会
-   1. 编译apisix go plugins并将生成的文件和配置文件`apisix-go-plugin-runner/cmd/go-runner/plugins/config.yaml` 拷贝到 `apisix-docker/apisix_conf/apisix-go-plugin-runner`文件夹下
+   1. 编译 `apisix-go-plugin-runner`
    2. 启动 docker compose
 3. 配置路由
    1. 参考routers_sample.sh 创建 router.sh 脚本，只需要修改 域名和IP 变量

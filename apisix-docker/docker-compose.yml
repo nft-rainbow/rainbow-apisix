@@ -56,7 +56,7 @@ services:
         max-size: "500m"
         max-file: "10"
     environment:
-      - DEBUG=${DEBUG:-}
+      - DEBUG
 
   etcd:
     image: bitnami/etcd:3.4.15

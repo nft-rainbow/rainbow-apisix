@@ -160,7 +160,7 @@ func readDecompressedBody(w pkgHTTP.Response) ([]byte, error) {
 		return nil, fmt.Errorf("failed to read body: %v", err)
 	}
 
-	// log.Infof("[RpcRespHandler] : Content-Encoding: %v, decompressed body: %s", encoding, string(body))
+	log.Infof("[RpcRespHandler] : Content-Encoding: %v, decompressed body: %s", encoding, string(body))
 
 	return body, nil
 }

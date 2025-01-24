@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 
 	"github.com/apache/apisix-go-plugin-runner/cmd/go-runner/plugins/count"
 	pkgHTTP "github.com/apache/apisix-go-plugin-runner/pkg/http"
@@ -154,9 +153,9 @@ func readDecompressedBody(w pkgHTTP.Response) ([]byte, error) {
 		return nil, fmt.Errorf("failed to read body: %v", err)
 	}
 
-	if os.Getenv("DEBUG") != "" {
-		log.Infof("[RpcRespHandler] : encoding is gzip: %v, decompressed body: %s", encoding == "gzip", string(body))
-	}
+	// if os.Getenv("DEBUG") != "" {
+	log.Infof("[RpcRespHandler] : encoding is gzip: %v, decompressed body: %s", encoding == "gzip", string(body))
+	// }
 
 	return body, nil
 }

@@ -124,7 +124,7 @@ func (c *RpcRespHandler) determineCount(w pkgHTTP.Response) {
 
 		var resp rpc.JsonRpcMessage
 		if err = json.Unmarshal(body, &resp); err != nil {
-			log.Infof("failed unmarshal rpc response: %v", err)
+			log.Infof("[RpcRespHandler] failed unmarshal rpc response\n err: %v\n body: %s", err, string(body))
 			return 0
 		}
 		if resp.Error != nil {
@@ -154,7 +154,7 @@ func readDecompressedBody(w pkgHTTP.Response) ([]byte, error) {
 		return nil, fmt.Errorf("failed to read body: %v", err)
 	}
 
-	if os.Getenv("DEBUG") != ""  {
+	if os.Getenv("DEBUG") != "" {
 		log.Infof("[RpcRespHandler] : encoding is gzip: %v, decompressed body: %s", encoding == "gzip", string(body))
 	}
 

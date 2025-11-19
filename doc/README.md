@@ -224,3 +224,9 @@ redis.host 用 apisix服务器 内网IP
         }
     },
     ```
+
+## 生产环境部署注意事项
+
+生产环境部署通过 [jenkins](https://jenkins.conflux-chain.org.cn/view/nftrainbow/) 自动化部署
+### Rainbow-Proxy部署
+Rainbow-proxy 部署需要**进入 nftrainbow-settle 后选择 proxy**。![alt text](./deploy-rainbow-proxy.png)

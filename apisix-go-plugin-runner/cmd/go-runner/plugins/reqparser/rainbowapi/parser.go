@@ -16,6 +16,7 @@ import (
 	"github.com/nft-rainbow/rainbow-api/services"
 	"github.com/nft-rainbow/rainbow-api/utils"
 	"github.com/nft-rainbow/rainbow-settle/common/models/enums"
+	"github.com/pkg/errors"
 )
 
 var (
@@ -53,7 +54,10 @@ func (o *RainbowApiRequestOp) ParseRequest(r pkgHTTP.Request) (types.ReqParseRes
 	if len(r.Args()) > 0 {
 		urlStr = fmt.Sprintf("%s?%s", urlStr, r.Args().Encode())
 	}
-	url, _ := url.Parse(urlStr)
+	url, err := url.Parse(urlStr)
+	if err != nil {
+		return nil, errors.WithMessage(err, "failed to parse url")
+	}
 
 	c.Request = &http.Request{
 		Header: r.Header().View(),
@@ -85,7 +89,7 @@ func (o *RainbowApiRequestOp) parseRequestByGin(c *gin.Context) (*types.DefaultR
 	var isMainnet bool
 
 	switch c.FullPath() {
-	case "/v1/mints/":
+	case "/v1/mints":
 		var mintMeta services.CustomMintDto
 		err = c.ShouldBindBodyWith(&mintMeta, binding.JSON)
 		isMainnet = utils.IsMainnetByName(mintMeta.Chain)
@@ -131,7 +135,7 @@ func (o *RainbowApiRequestOp) parseRequestByGin(c *gin.Context) (*types.DefaultR
 
 	case "/dashboard/apps/:id/contracts":
 		fallthrough
-	case "/v1/contracts/":
+	case "/v1/contracts":
 		var contractDeployDto services.ContractDeployDto
 		err = c.ShouldBindBodyWith(&contractDeployDto, binding.JSON)
 		isMainnet = utils.IsMainnetByName(contractDeployDto.Chain)

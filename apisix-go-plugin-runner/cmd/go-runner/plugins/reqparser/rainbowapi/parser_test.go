@@ -18,23 +18,33 @@ import (
 func TestGinContextFullpath(t *testing.T) {
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
-	url, _ := url.Parse(fmt.Sprintf("%v%v", "https://www.baidu.com/mints/1", "?version=1"))
-	c.Request = &http.Request{
-		Method: "POST",
-		URL:    url,
-	}
 
 	engine := gin.Default()
 	engine.POST("mints", gin.Default().Handlers.Last())
 	engine.POST("mints/:id", gin.Default().Handlers.Last())
-	engine.HandleContext(c)
 
-	fmt.Println(len(gin.Default().Handlers))
-	fmt.Println(c.FullPath())
+	url, _ := url.Parse(fmt.Sprintf("%v%v", "https://www.baidu.com/mints", "?version=1"))
+	c.Request = &http.Request{
+		Method: "POST",
+		URL:    url,
+	}
+	engine.HandleContext(c)
+	assert.Equal(t, 2, len(gin.Default().Handlers))
+	assert.Equal(t, "/mints", c.FullPath())
+
+	url, _ = url.Parse(fmt.Sprintf("%v%v", "https://www.baidu.com/mints/1", "?version=1"))
+	c.Request = &http.Request{
+		Method: "POST",
+		URL:    url,
+	}
+	engine.HandleContext(c)
+	assert.Equal(t, 2, len(gin.Default().Handlers))
+	assert.Equal(t, "/mints/:id", c.FullPath())
 }
 
 func TestUrlParse(t *testing.T) {
-	url, _ := url.Parse(fmt.Sprintf("%v?%v", "http://www.baidu.com", ""))
+	url, err := url.Parse(fmt.Sprintf("%v?%v", "http://www.baidu.com", ""))
+	assert.NoError(t, err)
 	fmt.Println(url)
 }
 
@@ -51,7 +61,7 @@ func TestParseRainbowApiRequest(t *testing.T) {
 	})
 	mints1Req := testutils.HttpRequest{
 		Method_: http.MethodPost,
-		Path_:   []byte("http://localhost:8080/v1/mints/"),
+		Path_:   []byte("http://localhost:8080/v1/mints"),
 		Header_: testutils.NewHttpHeader(),
 		Body_:   mints1Body,
 	}
@@ -67,7 +77,7 @@ func TestParseRainbowApiRequest(t *testing.T) {
 	})
 	mints2Req := testutils.HttpRequest{
 		Method_: http.MethodPost,
-		Path_:   []byte("http://localhost:8080/v1/mints/"),
+		Path_:   []byte("http://localhost:8080/v1/mints"),
 		Header_: testutils.NewHttpHeader(),
 		Body_:   mints2Body,
 	}
@@ -83,6 +93,20 @@ func TestParseRainbowApiRequest(t *testing.T) {
 		Path_:   []byte("http://localhost:8080/dashboard/apps/7/contracts"),
 		Header_: testutils.NewHttpHeader(),
 		Body_:   deploy1Body,
+	}
+
+	metadataReq := testutils.HttpRequest{
+		Method_: http.MethodGet,
+		Path_:   []byte("http://localhost:8080/v1/metadata/1"),
+		Header_: testutils.NewHttpHeader(),
+		Body_:   nil,
+	}
+
+	unknownReq := testutils.HttpRequest{
+		Method_: http.MethodGet,
+		Path_:   []byte("http://localhost:8080/unknown/path"),
+		Header_: testutils.NewHttpHeader(),
+		Body_:   nil,
 	}
 
 	table := []struct {
@@ -105,9 +129,21 @@ func TestParseRainbowApiRequest(t *testing.T) {
 		},
 		{
 			Req:       deploy1Req,
-			IsMainNet: false,
+			IsMainNet: true,
 			Count:     1,
 			CostType:  enums.COST_TYPE_RAINBOW_DEPLOY,
+		},
+		{
+			Req:       metadataReq,
+			IsMainNet: false,
+			Count:     1,
+			CostType:  enums.COST_TYPE_RAINBOW_NORMAL,
+		},
+		{
+			Req:       unknownReq,
+			IsMainNet: false,
+			Count:     1,
+			CostType:  enums.COST_TYPE_RAINBOW_NORMAL,
 		},
 	}
 
@@ -116,8 +152,8 @@ func TestParseRainbowApiRequest(t *testing.T) {
 		assert.NoError(t, err)
 
 		// assert.Equal(t, item.IsMainNet, result.IsMainnet, i)
-		assert.Equal(t, item.Count, result.GetCount(), i)
-		assert.Equal(t, item.CostType, result.GetCostType(), i)
+		assert.Equal(t, item.Count, result.GetCount(), fmt.Sprintf("%d: %s", i, item.Req.Path_))
+		assert.Equal(t, item.CostType.String(), result.GetCostType().String(), fmt.Sprintf("%d: %s", i, item.Req.Path_))
 	}
 
 }

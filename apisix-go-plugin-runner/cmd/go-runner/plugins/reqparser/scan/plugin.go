@@ -38,6 +38,7 @@ func (p *ScanParser) ParseConf(in []byte) (interface{}, error) {
 }
 
 func (p *ScanParser) RequestFilter(conf interface{}, w http.ResponseWriter, r pkgHTTP.Request) {
+	log.Infof("[%s] start scan request filter: path %s, method %s", r.ID(), r.Path(), r.Method())
 	// log.Infof("in scan-parser request filter")
 	c := conf.(ScanParserConf)
 	if _, err := types.DefaultRequestFilter(&c, w, r); err != nil {

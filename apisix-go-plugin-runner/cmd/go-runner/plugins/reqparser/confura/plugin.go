@@ -40,7 +40,7 @@ func (p *ConfuraParser) ParseConf(in []byte) (interface{}, error) {
 }
 
 func (p *ConfuraParser) RequestFilter(conf interface{}, w http.ResponseWriter, r pkgHTTP.Request) {
-	// log.Infof("in confura-parser request filter")
+	log.Infof("[%s] start confura request filter: path %s, method %s", r.ID(), r.Path(), r.Method())
 	c := conf.(ConfuraParserConf)
 	result, err := types.DefaultRequestFilter(&c, w, r)
 	if err != nil {

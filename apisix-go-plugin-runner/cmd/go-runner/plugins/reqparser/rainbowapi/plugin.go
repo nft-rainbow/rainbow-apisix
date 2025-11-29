@@ -42,6 +42,7 @@ func (p *RainbowApiParser) ParseConf(in []byte) (interface{}, error) {
 }
 
 func (p *RainbowApiParser) RequestFilter(conf interface{}, w http.ResponseWriter, r pkgHTTP.Request) {
+	log.Infof("[%s] start rainbow request filter: path %s, method %s", r.ID(), r.Path(), r.Method())
 	types.DefaultRequestFilter(&o, w, r)
 	r.Header().Set(constants.RAINBOW_SERVER_TYPE_HEADER_KEY, enums.SERVER_TYPE_RAINBOW.String())
 }

@@ -42,6 +42,8 @@ func DefaultRequestFilter(o Parser, w http.ResponseWriter, r pkgHTTP.Request) (R
 		return result, nil
 	}
 
+	logId := uuid.New().String()
+	log.Infof("[%s] start parse rainbow request: path %s, method %s", logId, r.Path(), r.Method())
 	result, err := fn()
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -49,6 +51,6 @@ func DefaultRequestFilter(o Parser, w http.ResponseWriter, r pkgHTTP.Request) (R
 			log.Errorf("failed to write: %s", err)
 		}
 	}
-	log.Infof("parse request result: path %s, method %s, cost-type %s, count %v", r.Path(), r.Method(), result.GetCostType(), result.GetCount())
+	log.Infof("[%s] parse request result: path %s, method %s, cost-type %s, count %v, err %s", logId, r.Path(), r.Method(), result.GetCostType(), result.GetCount(), err.Error())
 	return result, err
 }

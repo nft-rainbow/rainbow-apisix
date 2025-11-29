@@ -49,5 +49,6 @@ func DefaultRequestFilter(o Parser, w http.ResponseWriter, r pkgHTTP.Request) (R
 			log.Errorf("failed to write: %s", err)
 		}
 	}
+	log.Infof("parse request result: cost-type %s, count %v", result.GetCostType(), result.GetCount())
 	return result, err
 }

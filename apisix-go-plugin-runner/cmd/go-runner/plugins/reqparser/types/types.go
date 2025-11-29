@@ -45,7 +45,7 @@ func DefaultRequestFilter(o Parser, w http.ResponseWriter, r pkgHTTP.Request) (R
 	log.Infof("[%s] start parse rainbow request path %s, method %s", r.ID(), r.Path(), r.Method())
 	result, err := fn()
 	if err != nil {
-		log.Infof("[%s] failed parse rainbow request path %s, method %s, ", r.ID(), r.Path(), r.Method())
+		log.Infof("[%s] failed parse rainbow request path %s, method %s, err %s", r.ID(), r.Path(), r.Method(), err.Error())
 		w.WriteHeader(http.StatusBadRequest)
 		if _, err := w.Write([]byte(fmt.Sprintf("failed parse rainbow request: %v", err))); err != nil {
 			log.Errorf("failed to write: %s", err)

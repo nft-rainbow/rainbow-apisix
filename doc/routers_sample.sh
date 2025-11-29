@@ -196,7 +196,7 @@ curl $apisix_admin_addr/apisix/admin/routes/1000 -H 'X-API-KEY: edd1c9f034335f13
   "desc": "rainbow open api 路由，只匹配openapi需要收费的api",
   "uri": "/*",
   "vars": [
-    ["uri", "~~", "^/v1/(accounts|mints|transfers|burns|contracts|metadata|files|nft|tx)/.*$"]
+    ["uri", "~~", "^/v1/(accounts|mints|transfers|burns|contracts|metadata|files|nft|tx).*$"]
   ],
   "host": "'${domain_server_rainbow_openapi}'",
   "plugins": {

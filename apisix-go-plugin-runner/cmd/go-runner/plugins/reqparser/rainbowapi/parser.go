@@ -65,6 +65,10 @@ func (o *RainbowApiRequestOp) ParseRequest(r pkgHTTP.Request) (types.ReqParseRes
 		Method: r.Method(),
 		URL:    url,
 	}
+
+	log.Infof("debug before HandleContext: method=%s urlStr=%s url.Path=%s RequestURI=%s", r.Method(), urlStr, url.Path, c.Request.RequestURI)
+	log.Infof("registered mint paths: %v deploy paths: %v", utils.MintPaths, utils.DeployPaths)
+
 	// 此处主要用于解析fullpath
 	rainbowApiEngine.HandleContext(c)
 

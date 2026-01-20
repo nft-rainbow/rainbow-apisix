@@ -10,6 +10,7 @@ import (
 
 	"github.com/apache/apisix-go-plugin-runner/cmd/go-runner/plugins/reqparser/types"
 	pkgHTTP "github.com/apache/apisix-go-plugin-runner/pkg/http"
+	"github.com/apache/apisix-go-plugin-runner/pkg/log"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/nft-rainbow/conflux-gin-helper/utils/ginutils"
@@ -67,7 +68,9 @@ func (o *RainbowApiRequestOp) ParseRequest(r pkgHTTP.Request) (types.ReqParseRes
 	// 此处主要用于解析fullpath
 	rainbowApiEngine.HandleContext(c)
 
+	log.Infof("start parse url %s with method %s fullpath %s", urlStr, c.Request.Method, c.FullPath())
 	if o.getAction(c.Request.Method, c.FullPath()) == enums.COST_TYPE_RAINBOW_NORMAL {
+		log.Infof("parse result is normal, return directly")
 		return &types.DefaultReqParseResult{enums.COST_TYPE_RAINBOW_NORMAL, 1}, nil
 	}
 
@@ -155,6 +158,8 @@ func (o *RainbowApiRequestOp) parseRequestByGin(c *gin.Context) (*types.DefaultR
 	if err != nil {
 		return nil, err
 	}
+
+	log.Infof("parse in parseRequestByGin result raw_cost_type(not consider if mainnet) %v isMainnet %v", result.CostType, isMainnet)
 
 	if !isMainnet {
 		result.CostType = enums.COST_TYPE_RAINBOW_NORMAL

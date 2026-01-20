@@ -4,9 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"net/http"
 	"net/http/httptest"
-	"net/url"
+	"strings"
 
 	"github.com/apache/apisix-go-plugin-runner/cmd/go-runner/plugins/reqparser/types"
 	pkgHTTP "github.com/apache/apisix-go-plugin-runner/pkg/http"
@@ -17,7 +16,6 @@ import (
 	"github.com/nft-rainbow/rainbow-api/services"
 	"github.com/nft-rainbow/rainbow-api/utils"
 	"github.com/nft-rainbow/rainbow-settle/common/models/enums"
-	"github.com/pkg/errors"
 )
 
 var (
@@ -55,18 +53,24 @@ func (o *RainbowApiRequestOp) ParseRequest(r pkgHTTP.Request) (types.ReqParseRes
 	if len(r.Args()) > 0 {
 		urlStr = fmt.Sprintf("%s?%s", urlStr, r.Args().Encode())
 	}
-	url, err := url.Parse(urlStr)
-	if err != nil {
-		return nil, errors.WithMessage(err, "failed to parse url")
-	}
+	// url, err := url.Parse(urlStr)
+	// if err != nil {
+	// 	return nil, errors.WithMessage(err, "failed to parse url")
+	// }
 
-	c.Request = &http.Request{
-		Header: r.Header().View(),
-		Method: r.Method(),
-		URL:    url,
-	}
+	// c.Request = &http.Request{
+	// 	Header: r.Header().View(),
+	// 	Method: r.Method(),
+	// 	URL:    url,
+	// }
 
-	log.Infof("debug before HandleContext: method=%s urlStr=%s url.Path=%s RequestURI=%s", r.Method(), urlStr, url.Path, c.Request.RequestURI)
+	// 使用 httptest.NewRequest 确保 RequestURI 被正确填充
+	method := strings.ToUpper(r.Method())
+	req := httptest.NewRequest(method, urlStr, nil)
+	req.Header = r.Header().View()
+	c.Request = req
+
+	log.Infof("debug before HandleContext: method=%s urlStr=%s url.Path=%s RequestURI=%s", r.Method(), urlStr, c.Request.URL.Path, c.Request.RequestURI)
 	log.Infof("registered mint paths: %v deploy paths: %v", utils.MintPaths, utils.DeployPaths)
 
 	// 此处主要用于解析fullpath

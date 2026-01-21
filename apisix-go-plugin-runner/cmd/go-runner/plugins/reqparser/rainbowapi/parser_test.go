@@ -10,8 +10,9 @@ import (
 
 	"github.com/apache/apisix-go-plugin-runner/cmd/go-runner/plugins/testutils"
 	"github.com/gin-gonic/gin"
+	"github.com/nft-rainbow/rainbow-api/constants/enums"
 	"github.com/nft-rainbow/rainbow-api/services"
-	"github.com/nft-rainbow/rainbow-settle/common/models/enums"
+	cenums "github.com/nft-rainbow/rainbow-settle/common/models/enums"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -86,7 +87,7 @@ func TestParseRainbowApiRequest(t *testing.T) {
 		Chain:  "conflux",
 		Name:   "xxx",
 		Symbol: "xxx",
-		Type:   "erc721",
+		Type:   enums.CONTRACT_TYPE_ERC721,
 	})
 	deploy1Req := testutils.HttpRequest{
 		Method_: http.MethodPost,
@@ -113,37 +114,37 @@ func TestParseRainbowApiRequest(t *testing.T) {
 		Req       testutils.HttpRequest
 		IsMainNet bool
 		Count     int
-		CostType  enums.CostType
+		CostType  cenums.CostType
 	}{
 		{
 			Req:       mints1Req,
 			IsMainNet: true,
 			Count:     1,
-			CostType:  enums.COST_TYPE_RAINBOW_MINT,
+			CostType:  cenums.COST_TYPE_RAINBOW_MINT,
 		},
 		{
 			Req:       mints2Req,
 			IsMainNet: false,
 			Count:     1,
-			CostType:  enums.COST_TYPE_RAINBOW_NORMAL,
+			CostType:  cenums.COST_TYPE_RAINBOW_NORMAL,
 		},
 		{
 			Req:       deploy1Req,
 			IsMainNet: true,
 			Count:     1,
-			CostType:  enums.COST_TYPE_RAINBOW_DEPLOY,
+			CostType:  cenums.COST_TYPE_RAINBOW_DEPLOY,
 		},
 		{
 			Req:       metadataReq,
 			IsMainNet: false,
 			Count:     1,
-			CostType:  enums.COST_TYPE_RAINBOW_NORMAL,
+			CostType:  cenums.COST_TYPE_RAINBOW_NORMAL,
 		},
 		{
 			Req:       unknownReq,
 			IsMainNet: false,
 			Count:     1,
-			CostType:  enums.COST_TYPE_RAINBOW_NORMAL,
+			CostType:  cenums.COST_TYPE_RAINBOW_NORMAL,
 		},
 	}
 
